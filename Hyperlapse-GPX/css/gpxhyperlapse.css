@@ -1,0 +1,140 @@
+body 
+{
+	font-family: 'Lato', sans-serif;
+	background-color: #343438;
+	color: #FFF;
+}
+
+a 
+{
+	color: #9999FF;
+}
+
+.clearboth
+{
+	clear: both;
+	height: 1px;
+	line-height: 1px;
+}
+
+.hidden
+{
+	display: none;
+}
+
+.red
+{
+	color: #FF0000;
+}
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+#container
+{
+	width: 800px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#strava-connect
+{
+	float: right;
+	margin-top: 5px;
+}
+
+.authenticatedStrava 
+{
+    
+    text-align: left;
+   
+}
+
+#stravaActivities
+{
+    padding: 20px;
+    width: 760px;
+    background-color: #454545;
+}
+
+#stravaActivities a
+{
+    color: #FF9900;
+}
+
+#dropTarget
+{
+	border: 1px dashed #0000FF;
+	background-color: #FFF;
+	padding: 20px;
+	width: 760px;
+	color: #000;
+	margin-bottom: 20px;
+}
+
+#loading 
+{
+	visibility: hidden;
+	padding: 5px;
+	font-size: 80%;
+}
+
+#pano
+{
+	width: 800px;
+	height: 400px;
+	background-color: #000;
+	border: 0px solid #FFF;
+	overflow: hidden;
+}
+
+#controls
+{
+	width: 790px;
+	padding: 5px;
+	background-color: #444446;
+	color: #FFF;
+	display: none;
+}
+
+#controls button
+{
+	border: 0;
+	color: #FFF;
+	background: none;
+}
+
+#settings
+{
+	width: 780px;
+	padding: 10px;
+	background-color: #444446;
+	text-align: left;
+	display: none;
+}
+
+#settings label
+{
+	display: block; 
+	width: 300px;
+	padding: 4px;
+	
+}
+
+#settings label input, #settings label select
+{
+	float: right;
+}
+
+#settings button
+{
+	float: right;
+}

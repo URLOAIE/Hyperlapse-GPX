@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+	<title>GPX to Hyperlapse</title> 
+	<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="css/gpxhyperlapse.css" rel='stylesheet' type='text/css'>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
+	<script src="js/three.min.js"></script>
+	<script src="js/GSVPano.js"></script>
+	<script src="js/Hyperlapse.js"></script>
+	<script src="js/gpxhyperlapse.js"></script>
+	
+</head> 
+<body>
+    <div id="container">
+        <a class="connectStrava hidden" href=""><img id="strava-connect" src="images/ConnectWithStrava.png" width="172" height="31" alt="Connect with Strava"></a>
+        <div class="authenticatedStrava hidden">
+            <p>
+                Welcome
+                <span class="user">[no username]</span>.
+                <span id="selectStravaText">Select an activity from Strava below!</span>
+                <span id="showStravaActivities" class="hidden">Show Strava activities</span>
+            </p>
+            <div id="stravaActivities" data-bind="foreach: viewModel.stravaActivities">
+                <div>
+                    <a href="#" data-bind="attr: { id: id}, text: name, click: $parent.loadStravaHyperlapse"></a>
+                    <span data-bind="text: (distance/1000).toFixed(1)"></span>km
+                    (<span data-bind="text: type"></span>)
+
+                </div>
+            </div>
+        </div>
+        <h1>GPX Hyperlapse v0.6 (beta!)</h1>
+
+        <div id="dropTarget" draggable="true">Drag a GPX file here to generate your own hyperlapse video (tested on Chrome only)</div>
+        <div id="loading"><i id='spinner' class='fa fa-spinner fa-spin'></i> <span></span></div>
+        <a name="pano"></a>
+        <div id="pano">
+            <iframe id="youtube" style="margin-top: -25px;" width="800" height="450" src="http://www.youtube.com/embed/A6iEduVMk70?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div id="controls">
+            <button data-bind='click: prevHyperlapse'><i class="fa fa-step-backward"></i></button>
+            <button data-bind='click: pauseHyperlapse'><i class="fa fa-pause"></i></button>
+            <button data-bind='click: playHyperlapse'><i class="fa fa-play"></i></button>
+            <button data-bind='click: nextHyperlapse'><i class="fa fa-step-forward"></i></button>
+        </div>
+        <div id="settings">
+            <label>
+                Milliseconds between frames
+                <select data-bind='value: millis'>
+                    <option>10</option>
+                    <option>50</option>
+                    <option>100</option>
+                    <option>200</option>
+                    <option>500</option>
+                    <option>1000</option>
+                </select>
+            </label>
+
+            <label>
+                *Number of frames
+                <select data-bind='value: max_points'>
+                    <option>50</option>
+                    <option>100</option>
+                    <option>200</option>
+                    <option>400</option>
+                    <option>1000</option>
+                </select>
+            </label>
+
+            <span>*Requires reload</span>
+
+            <button data-bind="click: reloadHyperlapse, enable: (viewModel.max_points != 50)">Reload</button>
+
+            <br class="clearboth" />
+
+        </div>
+    </div>
+    <h2>Thank you</h2>
+    <p>
+        Crafted with <i class="fa fa-heart red"></i> by <a href='http://twitter.com/gusfraser'>gus</a> and made possible by the following projects:
+
+        <a href="https://developers.google.com/maps/documentation/javascript/3.exp/reference">Google Maps API v3.12</a>,
+        <a href="https://github.com/danvuquoc/Hyperlapse-GPX">Hyperlapse GPX</a>,
+        a modified version of <a href="https://github.com/pnitsch/GSVPano.js">GSVPano.js</a>,
+        <a href="https://github.com/mrdoob/three.js">three.js</a>
+
+    </p>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-57428181-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</body> 
+</html>
