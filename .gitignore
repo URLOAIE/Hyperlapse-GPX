@@ -12,3 +12,9 @@ examples/videostab.html
 examples/js/videostab
 examples/js/ransac.js
 examples/js/sylvester.js
+Hyperlapse-GPX/bin
+Hyperlapse-GPX/obj
+*.user
+*.suo
+*.PublishSettings
+
