@@ -1,10 +1,16 @@
 # **Hyperlapse.js**
 
-### JavaScript hyper-lapse utility for Google Street View.
+### JavaScript hyper-lapse utility for Google Street View, now with GPX and Strava Integration
 
 ![image](https://s3.amazonaws.com/tllabs.hyperlapse/hyperlapse.gif)
 
 This library was written to create dynamic hyper-lapse (time-lapse with movement) sequences using Google Street View. 
+
+Forked in this repo to provide GPX and Strava integration so you can view a Hyperlapse of a recorded GPX activity. 
+
+[GPXHyperlapse.com](http://gpxhyperlapse.com)
+
+## Original documentation
 
 [See it action.](http://hyperlapse.tllabs.io)
 
