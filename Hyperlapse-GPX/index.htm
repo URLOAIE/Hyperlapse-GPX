@@ -5,14 +5,20 @@
 	<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href="css/gpxhyperlapse.css" rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script> 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
 	<script src="js/three.min.js"></script>
 	<script src="js/GSVPano.js"></script>
 	<script src="js/Hyperlapse.js"></script>
 	<script src="js/gpxhyperlapse.js"></script>
-	
+    <script>
+    $(function () {
+        $("#slider").slider();
+    });
+    </script>
 </head> 
 <body>
     <div id="container">
@@ -33,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <h1>GPX Hyperlapse v0.6 (beta!)</h1>
+        <h1>GPX Hyperlapse v0.8 (beta!)</h1>
 
         <div id="dropTarget" draggable="true">Drag a GPX file here to generate your own hyperlapse video (tested on Chrome only)</div>
         <div id="loading"><i id='spinner' class='fa fa-spinner fa-spin'></i> <span></span></div>
@@ -42,6 +48,7 @@
             <iframe id="youtube" style="margin-top: -25px;" width="800" height="450" src="http://www.youtube.com/embed/A6iEduVMk70?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
         </div>
         <div id="controls">
+            <div id="slider"></div>
             <button data-bind='click: prevHyperlapse'><i class="fa fa-step-backward"></i></button>
             <button data-bind='click: pauseHyperlapse'><i class="fa fa-pause"></i></button>
             <button data-bind='click: playHyperlapse'><i class="fa fa-play"></i></button>

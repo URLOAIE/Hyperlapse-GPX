@@ -73,6 +73,7 @@
     <Content Include="js\Hyperlapse.js" />
     <Content Include="js\three.min.js" />
     <Content Include="Strava.svc" />
+    <Content Include="test.htm" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +91,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\gpxhyperlapse.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

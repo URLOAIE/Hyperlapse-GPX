@@ -10,6 +10,7 @@ GpxHyperlapseApp.Strava_athlete_id = null;
 GpxHyperlapseApp.startPoint = null;
 GpxHyperlapseApp.endPoint = null;
 GpxHyperlapseApp.wayPoints = new Array();
+GpxHyperlapseApp.latLngPoints = new Array();
 
 function dropHandler(event) {
 event.preventDefault();
@@ -46,6 +47,12 @@ function readerOnLoadEnd(filereader, file) {
 	GpxHyperlapseApp.startPoint = new google.maps.LatLng(gpxWayPoints[0].attributes["lat"].value, gpxWayPoints[0].attributes["lon"].value);
 	GpxHyperlapseApp.endPoint = new google.maps.LatLng(gpxWayPoints[gpxWayPoints.length - 1].attributes["lat"].value, gpxWayPoints[gpxWayPoints.length - 1].attributes["lon"].value);
 
+	GpxHyperlapseApp.latLngPoints = new Array();
+	for (j = 0; j < gpxWayPoints.length; j++)
+	{
+	    GpxHyperlapseApp.latLngPoints.push(new google.maps.LatLng(gpxWayPoints[j].attributes["lat"].value, gpxWayPoints[j].attributes["lon"].value));
+	}
+	
 	GpxHyperlapseApp.wayPoints = new Array();
 	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i].attributes["lat"].value, gpxWayPoints[i].attributes["lon"].value));
 	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 2].attributes["lat"].value, gpxWayPoints[i * 2].attributes["lon"].value));
@@ -72,11 +79,16 @@ function leaveDrop(e) {
 function loadHyperlapse()
 {
 
+    if (GpxHyperlapseApp.hyperlapse)
+    {
+        GpxHyperlapseApp.hyperlapse.reset();
+    }
+
 	GpxHyperlapseApp.hyperlapse = new Hyperlapse(document.getElementById('pano'), {
 	    lookat: GpxHyperlapseApp.startPoint,
-		zoom: 1,
+		zoom: 0,
 		use_lookat: viewModel.use_lookat(),
-		elevation: 100,
+		// elevation: 100,
 		millis: viewModel.millis(),
 		max_points: viewModel.max_points()
 		
@@ -101,6 +113,21 @@ function loadHyperlapse()
 		$("#loading span").html("Loading panorama " + e.position + " of " + viewModel.max_points());
 		console.log(e);
 	};
+
+	GpxHyperlapseApp.hyperlapse.onFrame = function (e) {
+	    console.log(e);
+
+	    $("#slider").slider({
+	        value: e.position,
+	        min: 0,
+	        max: e.max - 1,
+	        step: 1,
+	        slide: function (event, ui) {
+	            GpxHyperlapseApp.hyperlapse.setPosition(ui.value);
+	        }
+	    });
+
+	};
 	
 	GpxHyperlapseApp.hyperlapse.onLoadComplete = function(e) {
 		$("iframe#youtube").hide();
@@ -111,7 +138,6 @@ function loadHyperlapse()
 
 	};
 
-	// Google Maps API stuff here...
 	var directions_service = new google.maps.DirectionsService();
 
 	var route = {
@@ -119,17 +145,21 @@ function loadHyperlapse()
 		    origin: GpxHyperlapseApp.startPoint,
 		    destination: GpxHyperlapseApp.endPoint,
 		    waypoints: [{ location: GpxHyperlapseApp.wayPoints[0] }, { location: GpxHyperlapseApp.wayPoints[1] }, { location: GpxHyperlapseApp.wayPoints[2] }, { location: GpxHyperlapseApp.wayPoints[3] }, { location: GpxHyperlapseApp.wayPoints[4] }, { location: GpxHyperlapseApp.wayPoints[5] }, { location: GpxHyperlapseApp.wayPoints[6] }, { location: GpxHyperlapseApp.wayPoints[7] }],
-			travelMode: google.maps.DirectionsTravelMode.DRIVING
+		    travelMode: google.maps.DirectionsTravelMode.DRIVING,
+		    latLngPoints : GpxHyperlapseApp.latLngPoints
 		}
 	};
 	
+	GpxHyperlapseApp.hyperlapse.generate(route);
+
+    /*
 	directions_service.route(route.request, function(response, status) {
 		if (status == google.maps.DirectionsStatus.OK) {
 			GpxHyperlapseApp.hyperlapse.generate( {route:response} );
 		} else {
 			console.log(status);
 		}
-	});
+	});*/
 }
 
 function getCookie(cname) {
@@ -202,15 +232,24 @@ function loadActivities()
 
 function loadStravaActivity(id)
 {
-    $.getJSON("https://www.strava.com/api/v3/activities/" + id + "/streams/latlng?access_token=" + GpxHyperlapseApp.Strava_access_token + "&callback=?&resolution=low", function (data) {
+    $.getJSON("https://www.strava.com/api/v3/activities/" + id + "/streams/latlng?access_token=" + GpxHyperlapseApp.Strava_access_token + "&callback=?&resolution=high", function (data) {
 
         GpxHyperlapseApp.xmlGpx = data[0];
         $("#pano").html("");
 
-        var i = Math.floor(100 / 8);
+        var maxPoints = data[0].data.length - 1;
 
-         GpxHyperlapseApp.startPoint = new google.maps.LatLng(data[0].data[0][0], data[0].data[0][1]);
-        GpxHyperlapseApp.endPoint = new google.maps.LatLng(data[0].data[99][0], data[0].data[99][1]);
+
+        GpxHyperlapseApp.latLngPoints = new Array();
+        for (j = 0; j < data[0].data.length; j++) {
+            GpxHyperlapseApp.latLngPoints.push(new google.maps.LatLng(data[0].data[j][0], data[0].data[j][1]));
+        }
+
+        var i = Math.floor(maxPoints / 8);
+
+        /*
+        GpxHyperlapseApp.startPoint = new google.maps.LatLng(data[0].data[0][0], data[0].data[0][1]);
+        GpxHyperlapseApp.endPoint = new google.maps.LatLng(data[0].data[maxPoints][0], data[0].data[maxPoints][1]);
         
         GpxHyperlapseApp.wayPoints = new Array();
         GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i][0], data[0].data[i][1]));
@@ -221,6 +260,7 @@ function loadStravaActivity(id)
         GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 6][0], data[0].data[i * 6][1]));
         GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 7][0], data[0].data[i * 7][1]));
         GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 8][0], data[0].data[i * 8][1]));
+        */
 
         loadHyperlapse();
         

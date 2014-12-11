@@ -219,8 +219,8 @@ var Hyperlapse = function(container, params) {
 		if(++_point_index != _h_points.length) {
 			handleLoadProgress( {position:_point_index} );
 
-			if(!_cancel_load) {
-				_loader.composePanorama( _h_points[_point_index].pano_id );
+			if (!_cancel_load) {			   
+			    _loader.composePanorama(_h_points[_point_index].pano_id);                
 			} else {
 				handleLoadCanceled( {} );
 			}
@@ -308,7 +308,12 @@ var Hyperlapse = function(container, params) {
 
 	var parsePoints = function(response) {
 
-		_loader.load( _raw_points[_point_index], function() {
+	    var nextLocation = _raw_points[_raw_points.length - 1];
+	    if (_point_index + 1 < _raw_points.length) {
+	        nextLocation = _raw_points[_point_index + 1];
+	    }
+
+	    _loader.load( _raw_points[_point_index], nextLocation, function() {
 
 			if(_loader.id != _prev_pano_id) {
 				_prev_pano_id = _loader.id;
@@ -439,8 +444,17 @@ var Hyperlapse = function(container, params) {
 		_origin_heading = _h_points[_point_index].heading;
 		_origin_pitch = _h_points[_point_index].pitch;
 
-		if(self.use_lookat)
-			_lookat_heading = google.maps.geometry.spherical.computeHeading( _h_points[_point_index].location, self.lookat );
+		if (self.use_lookat)
+		    _lookat_heading = google.maps.geometry.spherical.computeHeading(_h_points[_point_index].location, self.lookat);
+		else {
+		    var nextPoint = _h_points[_h_points.length - 1];
+		    if (_point_index < _h_points.length - 1)
+		    {
+		        nextPoint = _h_points[_point_index + 1];
+		    }
+		    _lookat_heading = google.maps.geometry.spherical.computeHeading(_h_points[_point_index].location, nextPoint.location);
+
+		}
 
 		if(_h_points[_point_index].elevation != -1 ) {
 			var e = _h_points[_point_index].elevation - self.elevation_offset;
@@ -452,7 +466,8 @@ var Hyperlapse = function(container, params) {
 
 		handleFrame({
 			position:_point_index,
-			point: _h_points[_point_index]
+			point: _h_points[_point_index],
+            max: _h_points.length
 		});
 	};
 
@@ -464,7 +479,8 @@ var Hyperlapse = function(container, params) {
 			var o_y = self.position.y + (self.offset.y * t);
 			var o_z = self.tilt + (self.offset.z.toRad() * t);
 
-			var o_heading = (self.use_lookat) ? _lookat_heading - _origin_heading.toDeg() + o_x : o_x;
+		    // var o_heading = (self.use_lookat) ? _lookat_heading - _origin_heading.toDeg() + o_x : o_x;
+			var o_heading = _lookat_heading - _origin_heading.toDeg() + o_x;
 			var o_pitch = _position_y + o_y;
 
 			var olon = _lon, olat = _lat;
@@ -711,11 +727,33 @@ var Hyperlapse = function(container, params) {
 			_distance_between_points = p.distance_between_points || _distance_between_points;
 			_max_points = p.max_points || _max_points;
 
+			if (p.request.latLngPoints)
+			{
+			    _raw_points = [];
+
+			    if (p.request.latLngPoints.length > _max_points)
+			    {
+			        var j = p.request.latLngPoints.length / _max_points;
+			        for (var i = 0; i < _max_points; i++) {
+			            _raw_points.push(p.request.latLngPoints[Math.floor(i * j)]);
+			        }
+			    }
+			    else
+			    {
+			        // all of them:
+			        _raw_points = p.request.latLngPoints;
+			    }               
+                
+			    parsePoints(p.route);
+
+			}
+            /*
 			if(p.route) {
 				handleDirectionsRoute(p.route);
 			} else {
 				console.log("No route provided.");
 			}
+            */
 
 		}
 
@@ -764,6 +802,16 @@ var Hyperlapse = function(container, params) {
 		_is_playing = false;
 		handlePause({});
 	};
+
+    /**
+     * Go to a specific frame (e.g. from slider)
+     */
+	this.setPosition = function (i) {
+	    self.pause();
+
+	    _point_index = i;
+	    drawMaterial();
+	}
 
 	/**
 	 * Display next frame in sequence
