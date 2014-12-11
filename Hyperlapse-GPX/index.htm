@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html> 
 <head> 
-	<title>GPX to Hyperlapse</title> 
+	<title>GPX Hyperlapse - Create a Google Street View Hyperlapse from your GPX file or Strava activity</title> 
 	<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 	<link href="css/gpxhyperlapse.css" rel='stylesheet' type='text/css'>
@@ -14,14 +14,29 @@
 	<script src="js/GSVPano.js"></script>
 	<script src="js/Hyperlapse.js"></script>
 	<script src="js/gpxhyperlapse.js"></script>
-    <script>
-    $(function () {
-        $("#slider").slider();
-    });
+    <script type="text/javascript">
+    //<![CDATA[
+    (function () {
+        var shr = document.createElement('script');
+        shr.setAttribute('data-cfasync', 'false');
+        shr.src = '//dsms0mj1bbhn4.cloudfront.net/assets/pub/shareaholic.js';
+        shr.type = 'text/javascript'; shr.async = 'true';
+        shr.onload = shr.onreadystatechange = function () {
+            var rs = this.readyState;
+            if (rs && rs != 'complete' && rs != 'loaded') return;
+            var site_id = 'ca131f115e2c2b0fdc2f1f03213a44df';
+            try { Shareaholic.init(site_id); } catch (e) { }
+        };
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(shr, s);
+    })();
+    //]]>
     </script>
+
 </head> 
 <body>
     <div id="container">
+
         <a class="connectStrava hidden" href=""><img id="strava-connect" src="images/ConnectWithStrava.png" width="172" height="31" alt="Connect with Strava"></a>
         <div class="authenticatedStrava hidden">
             <p>
@@ -85,18 +100,20 @@
             <br class="clearboth" />
 
         </div>
+
     </div>
-    <h2>Thank you</h2>
-    <p>
-        Crafted with <i class="fa fa-heart red"></i> by <a href='http://twitter.com/gusfraser'>gus</a> and made possible by the following projects:
+    <div id="footer">
+        <h2>Thank you</h2>
+        <p>
+            Crafted with <i class="fa fa-heart red"></i> by <a href='http://twitter.com/gusfraser'>gus</a> and made possible by the following projects:
 
-        <a href="https://developers.google.com/maps/documentation/javascript/3.exp/reference">Google Maps API v3.12</a>,
-        <a href="https://github.com/danvuquoc/Hyperlapse-GPX">Hyperlapse GPX</a>,
-        a modified version of <a href="https://github.com/pnitsch/GSVPano.js">GSVPano.js</a>,
-        <a href="https://github.com/mrdoob/three.js">three.js</a>
+            <a href="https://developers.google.com/maps/documentation/javascript/3.exp/reference">Google Maps API v3.12</a>,
+            <a href="https://github.com/danvuquoc/Hyperlapse-GPX">Hyperlapse GPX</a>,
+            a modified version of <a href="https://github.com/pnitsch/GSVPano.js">GSVPano.js</a>,
+            <a href="https://github.com/mrdoob/three.js">three.js</a>
 
-    </p>
-
+        </p>
+    </div>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
