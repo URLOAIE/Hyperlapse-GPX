@@ -328,7 +328,7 @@ var Hyperlapse = function(container, params) {
 
 				_h_points.push( hp );
 
-				handleRouteProgress( {point: hp} );
+				handleRouteProgress( {point: hp, position: _h_points.length } );
 
 				if(_point_index == _raw_points.length-1) {
 					handleRouteComplete( {response: response, points: _h_points} );

@@ -9,7 +9,6 @@ GpxHyperlapseApp.Strava_athlete = null;
 GpxHyperlapseApp.Strava_athlete_id = null;
 GpxHyperlapseApp.startPoint = null;
 GpxHyperlapseApp.endPoint = null;
-GpxHyperlapseApp.wayPoints = new Array();
 GpxHyperlapseApp.latLngPoints = new Array();
 
 function dropHandler(event) {
@@ -53,16 +52,6 @@ function readerOnLoadEnd(filereader, file) {
 	    GpxHyperlapseApp.latLngPoints.push(new google.maps.LatLng(gpxWayPoints[j].attributes["lat"].value, gpxWayPoints[j].attributes["lon"].value));
 	}
 	
-	GpxHyperlapseApp.wayPoints = new Array();
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i].attributes["lat"].value, gpxWayPoints[i].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 2].attributes["lat"].value, gpxWayPoints[i * 2].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 3].attributes["lat"].value, gpxWayPoints[i * 3].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 4].attributes["lat"].value, gpxWayPoints[i * 4].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 5].attributes["lat"].value, gpxWayPoints[i * 5].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 6].attributes["lat"].value, gpxWayPoints[i * 6].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 7].attributes["lat"].value, gpxWayPoints[i * 7].attributes["lon"].value));
-	GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(gpxWayPoints[i * 8].attributes["lat"].value, gpxWayPoints[i * 8].attributes["lon"].value));
-
 	loadHyperlapse();
 }
 
@@ -86,9 +75,9 @@ function loadHyperlapse()
 
 	GpxHyperlapseApp.hyperlapse = new Hyperlapse(document.getElementById('pano'), {
 	    lookat: GpxHyperlapseApp.startPoint,
-		zoom: 0,
+		zoom: 2,
 		use_lookat: viewModel.use_lookat(),
-		// elevation: 100,
+		//elevation: 100,
 		millis: viewModel.millis(),
 		max_points: viewModel.max_points()
 		
@@ -106,7 +95,7 @@ function loadHyperlapse()
 	GpxHyperlapseApp.hyperlapse.onRouteProgress = function(e) {
 		//console.log(e);
 		$("#loading").css("visibility", "visible");
-		$("#loading span").html("Loading " + e.point.location.k + "," + e.point.location.B);
+		$("#loading span").html("Loading co-ordinates " + e.position + " of " + viewModel.max_points());
 	};
 	
 	GpxHyperlapseApp.hyperlapse.onLoadProgress = function(e) {
@@ -115,7 +104,7 @@ function loadHyperlapse()
 	};
 
 	GpxHyperlapseApp.hyperlapse.onFrame = function (e) {
-	    console.log(e);
+	    // console.log(e);
 
 	    $("#slider").slider({
 	        value: e.position,
@@ -133,7 +122,8 @@ function loadHyperlapse()
 		$("iframe#youtube").hide();
 		$("#controls").show();
 		$("#settings").show();
-		$("#loading").css("visibility", "hidden");		
+		$("#loading").css("visibility", "hidden");
+		viewModel.toggleHyperlapseSize();
 		GpxHyperlapseApp.hyperlapse.play();
 
 	};
@@ -144,22 +134,12 @@ function loadHyperlapse()
 		request:{
 		    origin: GpxHyperlapseApp.startPoint,
 		    destination: GpxHyperlapseApp.endPoint,
-		    waypoints: [{ location: GpxHyperlapseApp.wayPoints[0] }, { location: GpxHyperlapseApp.wayPoints[1] }, { location: GpxHyperlapseApp.wayPoints[2] }, { location: GpxHyperlapseApp.wayPoints[3] }, { location: GpxHyperlapseApp.wayPoints[4] }, { location: GpxHyperlapseApp.wayPoints[5] }, { location: GpxHyperlapseApp.wayPoints[6] }, { location: GpxHyperlapseApp.wayPoints[7] }],
-		    travelMode: google.maps.DirectionsTravelMode.DRIVING,
 		    latLngPoints : GpxHyperlapseApp.latLngPoints
 		}
 	};
 	
 	GpxHyperlapseApp.hyperlapse.generate(route);
 
-    /*
-	directions_service.route(route.request, function(response, status) {
-		if (status == google.maps.DirectionsStatus.OK) {
-			GpxHyperlapseApp.hyperlapse.generate( {route:response} );
-		} else {
-			console.log(status);
-		}
-	});*/
 }
 
 function getCookie(cname) {
@@ -222,7 +202,7 @@ $(function () {
 function loadActivities()
 {
 
-    $.getJSON("https://www.strava.com/api/v3/athlete/activities?access_token=" + GpxHyperlapseApp.Strava_access_token + "&per_page=20&callback=?", function (data) {
+    $.getJSON("https://www.strava.com/api/v3/athlete/activities?access_token=" + GpxHyperlapseApp.Strava_access_token + "&per_page=100&callback=?", function (data) {
          
         viewModel.stravaActivities(data);
      
@@ -232,35 +212,28 @@ function loadActivities()
 
 function loadStravaActivity(id)
 {
-    $.getJSON("https://www.strava.com/api/v3/activities/" + id + "/streams/latlng?access_token=" + GpxHyperlapseApp.Strava_access_token + "&callback=?&resolution=high", function (data) {
+    $.getJSON("https://www.strava.com/api/v3/activities/" + id + "/streams/latlng?access_token=" + GpxHyperlapseApp.Strava_access_token + "&callback=?", function (data) {
 
         GpxHyperlapseApp.xmlGpx = data[0];
         $("#pano").html("");
 
-        var maxPoints = data[0].data.length - 1;
+        var maxPoints = data[0].data.length;
 
+        console.log("maxPoints: " + maxPoints);
+
+        if (maxPoints > viewModel.max_points() * 2)
+        {
+            viewModel.max_points(Math.floor(maxPoints / 3));
+        }
+        else
+        {
+            viewModel.max_points(maxPoints);
+        }
 
         GpxHyperlapseApp.latLngPoints = new Array();
         for (j = 0; j < data[0].data.length; j++) {
             GpxHyperlapseApp.latLngPoints.push(new google.maps.LatLng(data[0].data[j][0], data[0].data[j][1]));
         }
-
-        var i = Math.floor(maxPoints / 8);
-
-        /*
-        GpxHyperlapseApp.startPoint = new google.maps.LatLng(data[0].data[0][0], data[0].data[0][1]);
-        GpxHyperlapseApp.endPoint = new google.maps.LatLng(data[0].data[maxPoints][0], data[0].data[maxPoints][1]);
-        
-        GpxHyperlapseApp.wayPoints = new Array();
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i][0], data[0].data[i][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 2][0], data[0].data[i * 2][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 3][0], data[0].data[i * 3][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 4][0], data[0].data[i * 4][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 5][0], data[0].data[i * 5][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 6][0], data[0].data[i * 6][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 7][0], data[0].data[i * 7][1]));
-        GpxHyperlapseApp.wayPoints.push(new google.maps.LatLng(data[0].data[i * 8][0], data[0].data[i * 8][1]));
-        */
 
         loadHyperlapse();
         
@@ -300,6 +273,36 @@ var viewModel = {
 	},
 	prevHyperlapse : function() { 
 		GpxHyperlapseApp.hyperlapse.prev();
+	},
+	toggleHyperlapseSize: function () {
+	    if($("#controls").css("position") == "absolute")
+	    {
+	        $("#controls").css("position", "");
+	        $("canvas").css("position", "");
+	        $("canvas").css("top", "");
+	        $("canvas").css("left", "");
+	        $("canvas").css("width", "");
+	        $("canvas").css("height", "");
+	        $("#controls").css("z-index", "");
+	        $("#controls").css("top", "");
+	        $("#controls").css("width", "");
+	        $("#controls").css("left", "");
+
+	    }
+	    else
+	    {
+	        $("canvas").css("position", "absolute");
+	        $("canvas").css("top", window.scrollTop);
+	        $("canvas").css("left", 0);
+	        $("canvas").css("width", document.body.clientWidth);
+	        $("canvas").css("height", window.innerHeight);
+	        $("#controls").css("z-index", "100");
+            $("#controls").css("position", "absolute")
+	        $("#controls").css("top", window.pageYOffset + window.innerHeight - 46);
+	        $("#controls").css("width", document.body.clientWidth - 16);
+	        $("#controls").css("left", "0");
+
+	    }
 	}
 	
 };
@@ -314,13 +317,24 @@ function init() {
 
 	ko.applyBindings(viewModel);
 		 
-	viewModel.max_points.subscribe(function(newValue) {
-		GpxHyperlapseApp.hyperlapse.max_points = newValue;
+	viewModel.max_points.subscribe(function (newValue) {
+	    if (GpxHyperlapseApp.hyperlapse)
+		    GpxHyperlapseApp.hyperlapse.max_points = newValue;
 	});
 
-	viewModel.millis.subscribe(function(newValue) {
-		GpxHyperlapseApp.hyperlapse.millis = newValue;
+	viewModel.millis.subscribe(function (newValue) {
+	    if (GpxHyperlapseApp.hyperlapse)
+		    GpxHyperlapseApp.hyperlapse.millis = newValue;
 	});
+
+    // Check for the various File API support.
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+	    // 
+	}
+
+    // document.getElementById('files').addEventListener('change', handleFileUpload, false);
+	var offsetPixels = 100;
+
 	
 }
 	

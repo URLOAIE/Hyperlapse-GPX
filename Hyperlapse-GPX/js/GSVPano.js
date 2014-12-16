@@ -86,10 +86,14 @@ GSVPANO.PanoLoader = function (parameters) {
 		for( y = 0; y < h; y++) {
 			for( x = 0; x < w; x++) {
 				url = 'http://maps.google.com/cbk?output=tile&panoid=' + panoId + '&zoom=' + _zoom + '&x=' + x + '&y=' + y + '&' + Date.now();
-				(function (x, y) { 
+			    (function (x, y) {
+
 					var img = new Image();
 					img.addEventListener('load', function () {
 						self.composeFromTile(x, y, this);
+					});
+					img.addEventListener('error', function () {
+					    self.composeFromTile(x, y, new Image());
 					});
 					img.crossOrigin = '';
 					img.src = url;
@@ -104,7 +108,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		console.log('Load for', location);
 		var self = this;
 
-		_panoClient.getPanoramaByLocation(location, 50, function (result, status) {
+		_panoClient.getPanoramaByLocation(location, 10, function (result, status) {
 			if (status === google.maps.StreetViewStatus.OK) {			  
 
 			    var heading = google.maps.geometry.spherical.computeHeading(result.location.latLng, nextLocation);
