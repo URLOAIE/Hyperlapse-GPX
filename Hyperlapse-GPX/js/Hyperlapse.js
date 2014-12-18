@@ -134,6 +134,8 @@ var Hyperlapse = function(container, params) {
 		_origin_heading = 0, _origin_pitch = 0,
 		_forward = true,
 		_lookat_heading = 0, _lookat_elevation = 0,
+        _prev_lookat_heading = 0,
+        _prev_o_heading = 0,
 		_canvas, _context,
 		_camera, _scene, _renderer, _mesh,
 		_loader, _cancel_load = false,
@@ -454,6 +456,14 @@ var Hyperlapse = function(container, params) {
 		    }
 		    _lookat_heading = google.maps.geometry.spherical.computeHeading(_h_points[_point_index].location, nextPoint.location);
 
+		    console.log("lookat_heading: " + _lookat_heading);
+		    if (_prev_lookat_heading != 0) {
+
+		        _lookat_heading = ((_lookat_heading - _prev_lookat_heading) / 2) + _prev_lookat_heading;
+		        
+		    }
+		    _prev_lookat_heading = _lookat_heading;
+		    console.log("updated lookat_heading: " + _lookat_heading);
 		}
 
 		if(_h_points[_point_index].elevation != -1 ) {
@@ -481,7 +491,23 @@ var Hyperlapse = function(container, params) {
 
 		    // var o_heading = (self.use_lookat) ? _lookat_heading - _origin_heading.toDeg() + o_x : o_x;
 			var o_heading = _lookat_heading - _origin_heading.toDeg() + o_x;
-			var o_pitch = _position_y + o_y;
+
+            // if no image
+			if (_lookat_heading == 0 && _prev_o_heading != 0) {
+			    o_heading = _prev_o_heading;
+			}
+			else {
+
+			   /* if (_prev_o_heading != 0) {
+			        o_heading = _prev_o_heading + ((_prev_o_heading - o_heading) / 4);
+			    } */
+			}
+
+			console.log("o_heading:" + o_heading);
+
+			_prev_o_heading = o_heading;
+
+    		var o_pitch = _position_y + o_y;
 
 			var olon = _lon, olat = _lat;
 			_lon = _lon + ( o_heading - olon );

@@ -154,18 +154,39 @@ function getCookie(cname) {
 }
 
 $(function () {
-    
-    var CLIENT_ID = 3822;
-    var AUTHORIZATION_ENDPOINT = "https://www.strava.com/oauth/authorize";
+    /*
+    var MAPMYAPI_CLIENT_ID = "ezx6uqtc26h6agp9u5nsydxbbbs2dmm5";
+    var MAPMYAPI_AUTHORIZATON_ENDPOINT = "https://www.mapmyfitness.com/v7.0/oauth2/authorize/";
 
-    var code = getCookie("strava_code");
-    if (code) {	
+    var mapmyapi_code = getCookie("mapmyapi_code");
+    if (mapmyapi_code)
+    {
+
+    }
+    else
+    {
+        $('a.connectMyMyApi').show();
+
+        var authUrl = MAPMYAPI_AUTHORIZATON_ENDPOINT +
+          "?response_type=code" +
+          "&client_id=" + MAPMYAPI_CLIENT_ID +
+          "&redirect_uri=" + location.protocol + '//' + location.host + "/mapmyapiauth/" +
+          "&state=activities&approval_prompt=force";
+
+        $("a.connectMyMyApi").attr("href", authUrl);
+    }
+    */
+
+    var STRAVA_CLIENT_ID = 3822;
+    var STRAVA_AUTHORIZATION_ENDPOINT = "https://www.strava.com/oauth/authorize";
+    var strava_code = getCookie("strava_code");
+    if (strava_code) {
 	
  		$.ajax({
 		    type: "POST",
 		    contentType: "application/json; charset=utf-8",
 		    url: "Strava.svc/Auth",
-		    data: '{"code": "' + code + '"}',
+		    data: '{"code": "' + strava_code + '"}',
 		    dataType: "json",
 		    success: function (response) {
 		        GpxHyperlapseApp.StravaAuth = JSON.parse(response.AuthResult);
@@ -189,9 +210,9 @@ $(function () {
     } else {
       $('a.connectStrava').show();
 
-      var authUrl = AUTHORIZATION_ENDPOINT + 
+      var authUrl = STRAVA_AUTHORIZATION_ENDPOINT + 
         "?response_type=code" +
-        "&client_id="    + CLIENT_ID +
+        "&client_id=" + STRAVA_CLIENT_ID +
         "&redirect_uri=" + location.protocol + '//' + location.host + "/stravaauth/" +
         "&state=activities&approval_prompt=force";
 
@@ -292,7 +313,7 @@ var viewModel = {
 	    else
 	    {
 	        $("canvas").css("position", "absolute");
-	        $("canvas").css("top", window.scrollTop);
+	        $("canvas").css("top", window.pageYOffset);
 	        $("canvas").css("left", 0);
 	        $("canvas").css("width", document.body.clientWidth);
 	        $("canvas").css("height", window.innerHeight);
@@ -335,6 +356,14 @@ function init() {
     // document.getElementById('files').addEventListener('change', handleFileUpload, false);
 	var offsetPixels = 100;
 
+	$(window).scroll(function () {
+
+	    if ($("#controls").css("position") == "absolute") {
+	        $("canvas").css("top", window.pageYOffset);
+	        $("#controls").css("top", window.pageYOffset + window.innerHeight - 46);
+	    }
+
+	});
 	
 }
 	

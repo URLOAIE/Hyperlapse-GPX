@@ -35,93 +35,106 @@
 
 </head> 
 <body>
-    <div id="twitter-right">
-        <a class="twitter-timeline" href="https://twitter.com/gpxhyperlapse" data-widget-id="543184781627113472">Tweets by @gpxhyperlapse</a>
-        <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
-    </div>
-
     <div id="container">
-
-        <a class="connectStrava hidden" href=""><img id="strava-connect" src="images/ConnectWithStrava.png" width="172" height="31" alt="Connect with Strava"></a>
-        <div id="fileUpload">
-            <input type="file" id="file" name="file" />
+        <div id="header">
+            <div>
+                <div class="authenticatedStrava hidden">
+                   
+                       <p> Welcome
+                        <span class="user">[no username]</span>.
+                        <span id="selectStravaText">Select an activity from Strava below!</span>
+                        <span id="showStravaActivities" class="hidden">Show Strava activities</span>
+                        </p>
+                  </div>
+                    <a class="connectStrava hidden" href=""><img id="strava-connect" src="images/ConnectWithStrava.png" width="172" height="31" alt="Connect with Strava"></a>
+                </div>
+            <br class="clearboth" />
         </div>
-        <h1>GPX Hyperlapse v0.10 (beta!)</h1>
+        <div id="twitter-right">
+            <a class="twitter-timeline" href="https://twitter.com/gpxhyperlapse" data-widget-id="543184781627113472">Tweets by @gpxhyperlapse</a>
+            <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
+        </div>
 
-        <div class="authenticatedStrava hidden">
-            <p>
-                Welcome
-                <span class="user">[no username]</span>.
-                <span id="selectStravaText">Select an activity from Strava below!</span>
-                <span id="showStravaActivities" class="hidden">Show Strava activities</span>
-            </p>
-            <div id="stravaActivities" data-bind="foreach: viewModel.stravaActivities">
-                <div>
-                    <a href="#" data-bind="attr: { id: id}, text: name, click: $parent.loadStravaHyperlapse"></a>
-                    <span data-bind="text: (distance/1000).toFixed(1)"></span>km
-                    (<span data-bind="text: type"></span>)
+        <div id="body">
 
+            <div id="fileUpload">
+                <input type="file" id="file" name="file" />
+            </div>
+            <h1>GPX Hyperlapse v0.12 (beta!)</h1>
+
+            <div class="authenticatedStrava hidden">
+                
+                <div id="stravaActivities" data-bind="foreach: viewModel.stravaActivities">
+                    <div>
+                        <a href="#" data-bind="attr: { id: id}, text: name, click: $parent.loadStravaHyperlapse"></a>
+                        <span data-bind="text: (distance/1000).toFixed(1)"></span>km
+                        (<span data-bind="text: type"></span>)
+
+                    </div>
                 </div>
             </div>
+
+
+            <a name="pano"></a>
+
+            <div id="dropTarget" draggable="true">Drag a GPX file here to generate your own hyperlapse video (tested on Chrome only)</div>
+
+
+
+            <div id="loading"><i id='spinner' class='fa fa-spinner fa-spin'></i> <span></span></div>
+
+
+            <div id="pano">
+                <iframe id="youtube" style="margin-top: -25px;" width="800" height="450" src="http://www.youtube.com/embed/A6iEduVMk70?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+
+            </div>
+            <div id="controls">
+                <div id="slider"></div>
+                <button data-bind='click: prevHyperlapse'><i class="fa fa-step-backward"></i></button>
+                <button data-bind='click: pauseHyperlapse'><i class="fa fa-pause"></i></button>
+                <button data-bind='click: playHyperlapse'><i class="fa fa-play"></i></button>
+                <button data-bind='click: nextHyperlapse'><i class="fa fa-step-forward"></i></button>
+                &nbsp;
+                &nbsp;
+                <button data-bind='click: toggleHyperlapseSize'><i class="fa fa-arrows-alt"></i></button>
+            </div>
+            <div id="settings">
+                <label>
+                    Milliseconds between frames
+                    <select data-bind='value: millis'>
+                        <option>10</option>
+                        <option>50</option>
+                        <option>100</option>
+                        <option>200</option>
+                        <option>500</option>
+                        <option>1000</option>
+                    </select>
+                </label>
+
+                <label>
+                    *Number of frames
+                    <select data-bind='value: max_points()'>
+                        <option>50</option>
+                        <option>100</option>
+                        <option>200</option>
+                        <option>400</option>
+                        <option>1000</option>
+                    </select>
+                </label>
+
+                <span>*Requires reload</span>
+
+                <button data-bind="click: reloadHyperlapse, enable: (viewModel.max_points() != 50)">Reload</button>
+
+                <br class="clearboth" />
+
+            </div>
+
         </div>
-
-        <a name="pano"></a>
-
-        <div id="dropTarget" draggable="true">Drag a GPX file here to generate your own hyperlapse video (tested on Chrome only)</div>
-
-
-
-        <div id="loading"><i id='spinner' class='fa fa-spinner fa-spin'></i> <span></span></div>
-
-      
-        <div id="pano">
-            <iframe id="youtube" style="margin-top: -25px;" width="800" height="450" src="http://www.youtube.com/embed/A6iEduVMk70?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
-           
-        </div>
-        <div id="controls">
-            <div id="slider"></div>
-            <button data-bind='click: prevHyperlapse'><i class="fa fa-step-backward"></i></button>
-            <button data-bind='click: pauseHyperlapse'><i class="fa fa-pause"></i></button>
-            <button data-bind='click: playHyperlapse'><i class="fa fa-play"></i></button>
-            <button data-bind='click: nextHyperlapse'><i class="fa fa-step-forward"></i></button>
-            &nbsp;
-            &nbsp;
-            <button data-bind='click: toggleHyperlapseSize'><i class="fa fa-arrows-alt"></i></button>
-        </div>
-        <div id="settings">
-            <label>
-                Milliseconds between frames
-                <select data-bind='value: millis'>
-                    <option>10</option>
-                    <option>50</option>
-                    <option>100</option>
-                    <option>200</option>
-                    <option>500</option>
-                    <option>1000</option>
-                </select>
-            </label>
-
-            <label>
-                *Number of frames
-                <select data-bind='value: max_points()'>
-                    <option>50</option>
-                    <option>100</option>
-                    <option>200</option>
-                    <option>400</option>
-                    <option>1000</option>
-                </select>
-            </label>
-
-            <span>*Requires reload</span>
-
-            <button data-bind="click: reloadHyperlapse, enable: (viewModel.max_points() != 50)">Reload</button>
-
-            <br class="clearboth" />
-
-        </div>
-
+        <div class="push"></div>
     </div>
     <div id="footer">
+        <div>
         <h2>Thank you</h2>
         <p>
             Crafted with <i class="fa fa-heart red"></i> by <a href='http://twitter.com/gusfraser'>gus</a> and made possible by the following projects:
@@ -132,7 +145,9 @@
             <a href="https://github.com/mrdoob/three.js">three.js</a>
 
         </p>
+        </div>
     </div>
+    
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

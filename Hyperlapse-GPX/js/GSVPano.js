@@ -108,7 +108,7 @@ GSVPANO.PanoLoader = function (parameters) {
 		console.log('Load for', location);
 		var self = this;
 
-		_panoClient.getPanoramaByLocation(location, 10, function (result, status) {
+		_panoClient.getPanoramaByLocation(location, 20, function (result, status) {
 			if (status === google.maps.StreetViewStatus.OK) {			  
 
 			    var heading = google.maps.geometry.spherical.computeHeading(result.location.latLng, nextLocation);
